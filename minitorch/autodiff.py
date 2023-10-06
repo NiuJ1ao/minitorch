@@ -64,17 +64,23 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
         Non-constant Variables in topological order starting from the right.
     """
     # TODO: Implement for Task 1.4.
-    visited = set()
+    perm_marks = set()
+    temp_marks = set()
     res: List = []
 
     def dfs(variable: Variable) -> None:
-        if variable.is_constant() or variable.unique_id in visited:
+        if variable.is_constant() or variable.unique_id in perm_marks:
             return
+        if variable.unique_id in temp_marks:
+            raise RuntimeError("Cycle detected in computation graph!")
+
+        temp_marks.add(variable.unique_id)
 
         for p in variable.parents:
             dfs(p)
 
-        visited.add(variable.unique_id)
+        temp_marks.remove(variable.unique_id)
+        perm_marks.add(variable.unique_id)
         res.append(variable)
 
     dfs(variable)

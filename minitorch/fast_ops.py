@@ -161,13 +161,11 @@ def tensor_map(
     ) -> None:
         # TODO: Implement for Task 3.1.
         for i in prange(out.size):
-            out_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
-            in_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
+            out_index = np.zeros_like(out_shape)
+            in_index = np.zeros_like(in_shape)
             to_index(i, out_shape, out_index)
-            o_i = index_to_position(out_index, out_strides)
             broadcast_index(out_index, out_shape, in_shape, in_index)
-            in_i = index_to_position(in_index, in_strides)
-            out[o_i] = fn(in_storage[in_i])
+            out[i] = fn(in_storage[index_to_position(in_index, in_strides)])
 
     return njit(parallel=True)(_map)  # type: ignore
 
@@ -207,17 +205,16 @@ def tensor_zip(
     ) -> None:
         # TODO: Implement for Task 3.1.
         for i in prange(out.size):
-            out_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
-            a_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
-            b_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
-
+            out_index = np.zeros_like(out_shape)
+            a_index = np.zeros_like(a_shape)
+            b_index = np.zeros_like(b_shape)
             to_index(i, out_shape, out_index)
-            out_i = index_to_position(out_index, out_strides)
             broadcast_index(out_index, out_shape, a_shape, a_index)
-            a_i = index_to_position(a_index, a_strides)
             broadcast_index(out_index, out_shape, b_shape, b_index)
-            b_i = index_to_position(b_index, b_strides)
-            out[out_i] = fn(a_storage[a_i], b_storage[b_i])
+            out[i] = fn(
+                a_storage[index_to_position(a_index, a_strides)],
+                b_storage[index_to_position(b_index, b_strides)]
+            )
 
     return njit(parallel=True)(_zip)  # type: ignore
 
@@ -252,16 +249,14 @@ def tensor_reduce(
     ) -> None:
         # TODO: Implement for Task 3.1.
         for i in prange(out.size):
-            a_index: Index = np.zeros(MAX_DIMS, dtype=np.int32)
-            to_index(i, out_shape, a_index)
-            out_i = index_to_position(a_index, out_strides)
+            out_index = np.zeros_like(out_shape)
+            to_index(i, out_shape, out_index)
 
-            # start value
-            a_i = index_to_position(a_index, a_strides)
-            val = out[out_i]
+            a_i = index_to_position(out_index, a_strides)
+            val = out[i]
             for j in prange(a_shape[reduce_dim]):
                 val = fn(a_storage[a_i + j * a_strides[reduce_dim]], val)
-            out[out_i] = val
+            out[i] = val
 
     return njit(parallel=True)(_reduce)  # type: ignore
 

@@ -74,6 +74,11 @@ def sigmoid(x: float) -> float:
     return 1.0 / (1.0 + math.exp(-x)) if x >= 0 else math.exp(x) / (1.0 + math.exp(x))
 
 
+def sigmoid_back(x: float, d_output: float) -> float:
+    r"""f'(x) = \sigma * (1 - \sigma) * d_output"""
+    return d_output * (x) * (1 - x)
+
+
 def relu(x: float) -> float:
     """
     $f(x) =$ x if x is greater than 0, else 0

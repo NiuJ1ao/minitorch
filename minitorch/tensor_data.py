@@ -64,14 +64,12 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
 
     """
     # TODO: Implement for Task 2.1.
-    n = shape.size
-
-    if n == 1:
+    if shape.size == 1:
         out_index[0] = ordinal
         return
 
     cur = ordinal
-    for i in range(n - 1, -1, -1):
+    for i in range(shape.size - 1, -1, -1):
         out_index[i] = cur % shape[i]
         cur //= shape[i]
 
@@ -125,13 +123,12 @@ def shape_broadcast(shape1: UserShape, shape2: UserShape) -> UserShape:
         len1, len2 = len2, len1
     shape2 = (1,) * (len1 - len2) + shape2
 
-    union_shape = []
+    union_shape = tuple()
     for i in range(len1):
         if shape1[i] != shape2[i] and shape1[i] != 1 and shape2[i] != 1:
             raise IndexingError()
-        else:
-            union_shape.append(max(shape1[i], shape2[i]))
-    return tuple(union_shape)
+        union_shape += (max(shape1[i], shape2[i]),)
+    return union_shape
 
 
 def strides_from_shape(shape: UserShape) -> UserStrides:
@@ -257,12 +254,9 @@ class TensorData:
         ), f"Must give a position to each dimension. Shape: {self.shape} Order: {order}"
 
         # TODO: Implement for Task 2.1.
-        new_shape = []
-        new_strides = []
-        for i in order:
-            new_shape.append(self.shape[i])
-            new_strides.append(self.strides[i])
-        return TensorData(self._storage, tuple(new_shape), tuple(new_strides))
+        shape = tuple(self.shape[i] for i in order)
+        strides = tuple(self.strides[i] for i in order)
+        return TensorData(self._storage, shape, strides)
 
     def to_string(self) -> str:
         s = ""

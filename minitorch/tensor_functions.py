@@ -122,7 +122,10 @@ class Sigmoid(Function):
     def backward(ctx: Context, grad_output: Tensor) -> Tensor:
         # TODO: Implement for Task 2.4.
         (sig,) = ctx.saved_values
-        return grad_output.f.mul_zip(sig, grad_output.f.add_zip(tensor([1.], backend=grad_output.backend), grad_output.f.neg_map(sig)))
+        return grad_output.f.sigmoid_back_zip(sig, grad_output)
+        # neg_sig = grad_output.f.neg_map(sig)
+        # neg_sig = grad_output.f.add_zip(neg_sig, tensor([1]))
+        # return grad_output.f.mul_zip(grad_output, grad_output.f.mul_zip(sig, neg_sig))
 
 
 class ReLU(Function):
