@@ -113,7 +113,7 @@ class FastTrain:
                 correct = int(((out.detach() > 0.5) == y2).sum()[0])
                 log_fn(epoch, total_loss, correct, losses)
                 if epoch > 0:
-                    print(f"Average time {total_epoch_time / epoch} for {epoch} epochs")
+                    print(f"Average time {total_epoch_time / epoch}")
 
 
 if __name__ == "__main__":
@@ -144,14 +144,3 @@ if __name__ == "__main__":
     FastTrain(
         HIDDEN, backend=FastTensorBackend if args.BACKEND != "gpu" else GPUBackend
     ).train(data, RATE)
-    
-    # from cProfile import Profile
-    # from pstats import SortKey, Stats
-    
-    # with Profile() as profile:
-    #     FastTrain(
-    #         HIDDEN, backend=FastTensorBackend if args.BACKEND != "gpu" else GPUBackend
-    #     ).train(data, RATE, 1)
-    #     (
-    #         Stats(profile).sort_stats(SortKey.CUMULATIVE).print_stats()
-    #     )

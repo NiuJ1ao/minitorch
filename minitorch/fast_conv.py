@@ -81,7 +81,24 @@ def _tensor_conv1d(
     s2 = weight_strides
 
     # TODO: Implement for Task 4.1.
-    raise NotImplementedError("Need to implement for Task 4.1")
+    for i in prange(out_size):
+        out_index: Index = np.empty(MAX_DIMS, dtype=np.int32)  # (batch, channel, index)
+        to_index(i, out_shape, out_index)
+        start_pos = out_index[0] * s1[0] + out_index[2] * s1[2]
+        weight_pos0 = out_index[1] * s2[0]
+        val = 0.0
+        for k in prange(kw):
+            if reverse and out_index[2] - k < 0:
+                break
+            if not reverse and out_index[2] + k >= width:
+                break
+            input_pos2 = start_pos - k * s1[2] if reverse else start_pos + k * s1[2]
+            weight_pos2 = weight_pos0 + k * s2[2]
+            for in_channel in prange(in_channels):
+                in_ordinal = input_pos2 + in_channel * s1[1]
+                w_ordinal = weight_pos2 + in_channel * s2[1]
+                val += input[in_ordinal] * weight[w_ordinal]
+        out[i] = val
 
 
 tensor_conv1d = njit(parallel=True)(_tensor_conv1d)
@@ -207,7 +224,31 @@ def _tensor_conv2d(
     s20, s21, s22, s23 = s2[0], s2[1], s2[2], s2[3]
 
     # TODO: Implement for Task 4.2.
-    raise NotImplementedError("Need to implement for Task 4.2")
+    for i in prange(out_size):
+        out_index: Index = np.empty(MAX_DIMS, dtype=np.int32)
+        to_index(i, out_shape, out_index)
+        weight_pos0 = out_index[1] * s20
+        start_pos = out_index[0] * s10 + out_index[2] * s12 + out_index[3] * s13
+        val = 0.0
+        for h in prange(kh):
+            if reverse and out_index[2] - h < 0:
+                break
+            if not reverse and out_index[2] + h >= height:
+                break
+            input_pos2 = start_pos - h * s12 if reverse else start_pos + h * s12
+            weight_pos2 = weight_pos0 + h * s22
+            for w in prange(kw):
+                if reverse and out_index[3] - w < 0:
+                    break
+                if not reverse and out_index[3] + w >= width:
+                    break
+                input_pos3 = input_pos2 - w * s13 if reverse else input_pos2 + w * s13
+                weight_pos3 = weight_pos2 + w * s23
+                for in_channel in prange(in_channels):
+                    in_ordinal = input_pos3 + in_channel * s11
+                    w_ordinal = weight_pos3 + in_channel * s21
+                    val += input[in_ordinal] * weight[w_ordinal]
+        out[i] = val
 
 
 tensor_conv2d = njit(parallel=True, fastmath=True)(_tensor_conv2d)

@@ -144,9 +144,11 @@ def map(fn: Callable[[float], float]) -> Callable[[Iterable[float]], Iterable[fl
          A function that takes a list, applies `fn` to each element, and returns a
          new list
     """
+
     # TODO: Implement for Task 0.3.
     def _map(x: Iterable[float]) -> Iterable[float]:
         return [fn(i) for i in x]
+
     return _map
 
 
@@ -172,9 +174,11 @@ def zipWith(
          applying fn(x, y) on each pair of elements.
 
     """
+
     # TODO: Implement for Task 0.3.
     def _zip(x: Iterable[float], y: Iterable[float]) -> Iterable[float]:
         return [fn(i, j) for i, j in zip(x, y)]
+
     return _zip
 
 

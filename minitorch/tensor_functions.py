@@ -107,7 +107,9 @@ class Mul(Function):
     def backward(ctx: Context, grad_output: Tensor) -> Tuple[Tensor, Tensor]:
         # TODO: Implement for Task 2.4.
         b_prime, a_prime = ctx.saved_values
-        return grad_output.f.mul_zip(a_prime, grad_output), grad_output.f.mul_zip(b_prime, grad_output)
+        return grad_output.f.mul_zip(a_prime, grad_output), grad_output.f.mul_zip(
+            b_prime, grad_output
+        )
 
 
 class Sigmoid(Function):

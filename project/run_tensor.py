@@ -108,17 +108,8 @@ class TensorTrain:
 
 
 if __name__ == "__main__":
-    PTS = 50
-    HIDDEN = 2
+    PTS = 200
+    HIDDEN = 20
     RATE = 0.5
-    data = minitorch.datasets["Simple"](PTS)
+    data = minitorch.datasets["Xor"](PTS)
     TensorTrain(HIDDEN).train(data, RATE)
-    
-    # from cProfile import Profile
-    # from pstats import SortKey, Stats
-    
-    # with Profile() as profile:
-    #     TensorTrain(HIDDEN).train(data, RATE, 1)
-    #     (
-    #         Stats(profile).strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats()
-    #     )
