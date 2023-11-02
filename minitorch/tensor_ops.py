@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Callable, Optional, Type
 import numpy as np
 from typing_extensions import Protocol
 
-from . import operators
+from torchbackend import operators
 from .tensor_data import (
     MAX_DIMS,
     broadcast_index,
