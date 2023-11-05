@@ -107,7 +107,7 @@ class Tensor:
         Returns:
              Converted to numpy array
         """
-        return self.contiguous()._tensor._storage.reshape(self.shape)
+        return self.contiguous()._tensor._storage.to_numpy().reshape(self.shape)
 
     # Properties
     @property

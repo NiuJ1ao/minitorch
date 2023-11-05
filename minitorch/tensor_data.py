@@ -5,8 +5,9 @@ from typing import Iterable, Optional, Sequence, Tuple, Union
 
 import numba
 import numpy as np
-import numpy.typing as npt
-from numpy import array, float64
+# import numpy.typing as npt
+# from numpy import array, float64
+from torchbackend import NDArray_int32, NDArray_float64
 from typing_extensions import TypeAlias
 
 from .operators import prod
@@ -19,11 +20,11 @@ class IndexingError(RuntimeError):
     pass
 
 
-Storage: TypeAlias = npt.NDArray[np.float64]
-OutIndex: TypeAlias = npt.NDArray[np.int32]
-Index: TypeAlias = npt.NDArray[np.int32]
-Shape: TypeAlias = npt.NDArray[np.int32]
-Strides: TypeAlias = npt.NDArray[np.int32]
+Storage: TypeAlias = NDArray_float64
+OutIndex: TypeAlias = NDArray_int32
+Index: TypeAlias = NDArray_int32
+Shape: TypeAlias = NDArray_int32
+Strides: TypeAlias = NDArray_int32
 
 UserIndex: TypeAlias = Sequence[int]
 UserShape: TypeAlias = Sequence[int]
@@ -45,7 +46,7 @@ def index_to_position(index: Index, strides: Strides) -> int:
 
     # TODO: Implement for Task 2.1.
     res = 0
-    for i in range(strides.size):
+    for i in range(len(strides)):
         res += index[i] * strides[i]
     return res
 
@@ -64,12 +65,12 @@ def to_index(ordinal: int, shape: Shape, out_index: OutIndex) -> None:
 
     """
     # TODO: Implement for Task 2.1.
-    if shape.size == 1:
+    if len(shape) == 1:
         out_index[0] = ordinal
         return
 
     cur = ordinal
-    for i in range(shape.size - 1, -1, -1):
+    for i in range(len(shape) - 1, -1, -1):
         out_index[i] = cur % shape[i]
         cur //= shape[i]
 
@@ -94,8 +95,8 @@ def broadcast_index(
         None
     """
     # TODO: Implement for Task 2.2.
-    offset = big_shape.size - shape.size
-    for i in range(shape.size):
+    offset = len(big_shape) - len(shape)
+    for i in range(len(shape)):
         out_index[i] = 0 if shape[i] == 1 else big_index[offset + i]
 
 
@@ -157,7 +158,7 @@ class TensorData:
         if isinstance(storage, np.ndarray):
             self._storage = storage
         else:
-            self._storage = array(storage, dtype=float64)
+            self._storage = NDArray_float64(storage)
 
         if strides is None:
             strides = strides_from_shape(shape)
@@ -166,8 +167,8 @@ class TensorData:
         assert isinstance(shape, tuple), "Shape must be tuple"
         if len(strides) != len(shape):
             raise IndexingError(f"Len of strides {strides} must match {shape}.")
-        self._strides = array(strides)
-        self._shape = array(shape)
+        self._strides = NDArray_int32(strides)
+        self._shape = NDArray_int32(shape)
         self.strides = strides
         self.dims = len(strides)
         self.size = int(prod(shape))
@@ -198,9 +199,9 @@ class TensorData:
 
     def index(self, index: Union[int, UserIndex]) -> int:
         if isinstance(index, int):
-            aindex: Index = array([index])
+            aindex: Index = NDArray_int32([index])
         if isinstance(index, tuple):
-            aindex = array(index)
+            aindex = NDArray_int32(index)
 
         # Pretend 0-dim shape is 1-dim shape of singleton
         shape = self.shape
@@ -208,7 +209,7 @@ class TensorData:
             shape = (1,)
 
         # Check for errors
-        if aindex.shape[0] != len(self.shape):
+        if len(aindex) != len(self.shape):
             raise IndexingError(f"Index {aindex} must be size of {self.shape}.")
         for i, ind in enumerate(aindex):
             if ind >= self.shape[i]:
@@ -217,11 +218,11 @@ class TensorData:
                 raise IndexingError(f"Negative indexing for {aindex} not supported.")
 
         # Call fast indexing.
-        return index_to_position(array(index), self._strides)
+        return index_to_position(NDArray_int32(index), self._strides)
 
     def indices(self) -> Iterable[UserIndex]:
-        lshape: Shape = array(self.shape)
-        out_index: Index = array(self.shape)
+        lshape: Shape = NDArray_int32(self.shape)
+        out_index: Index = NDArray_int32(self.shape)
         for i in range(self.size):
             to_index(i, lshape, out_index)
             yield tuple(out_index)

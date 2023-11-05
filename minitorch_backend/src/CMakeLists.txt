@@ -1,11 +1,13 @@
 add_subdirectory(operators)
 add_subdirectory(tensor)
+add_subdirectory(utils)
 
 add_library(torchbackend SHARED ${ALL_OBJECT_FILES})
 
 set(MINITORCH_LIBS
         minitorch_operators
         minitorch_tensor
+        minitorch_utils
         )
 
 target_link_libraries(

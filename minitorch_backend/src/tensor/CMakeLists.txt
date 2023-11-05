@@ -2,6 +2,7 @@ add_library(
     minitorch_tensor
     OBJECT
     tensor.cpp
+    ndarray.cpp
     fast_ops.cpp
     cuda_ops.cpp
 )

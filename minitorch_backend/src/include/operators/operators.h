@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <vector>
+#include <pybind11/pybind11.h>
 
 namespace minitorch {
 
@@ -61,4 +62,7 @@ public:
     template <typename T>
     static auto prod(std::vector<T> x) -> T;
 };
+
+namespace py = pybind11;
+void pybind_operators(py::module &m);
 }
