@@ -28,6 +28,7 @@ endif()
 
 # Python
 find_package(Python COMPONENTS Interpreter Development)
+find_package(PythonLibs REQUIRED)
 
 # CTest
 enable_testing()
@@ -46,7 +47,7 @@ message("${MINITORCH_SANITIZER} sanitizer will be enabled in debug mode.")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Werror")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wno-unused-parameter -Wno-attributes") # TODO: remove
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb -fomit-frame-pointer -foptimize-sibling-calls -fopenmp")
-# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=${MINITORCH_SANITIZER}") # TODO: Does not work with pybind?
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=${MINITORCH_SANITIZER}")
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")

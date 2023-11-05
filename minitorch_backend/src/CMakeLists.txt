@@ -12,11 +12,16 @@ set(MINITORCH_LIBS
 
 target_link_libraries(
         torchbackend
-        ${MINITORCH_LIBS})
+        ${MINITORCH_LIBS}
+        ${PYTHON_LIBRARIES}
+        )
 
 target_include_directories(
-        torchbackend PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+        torchbackend PUBLIC 
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+        ${PYTHON_INCLUDE_DIRS}
+        )
 
 pybind11_extension(torchbackend)
 pybind11_strip(torchbackend)
